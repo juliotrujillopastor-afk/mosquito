@@ -1,0 +1,119 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Fuente profesional, sin ser demasiado genérica */
+    font-family: 'Helvetica Neue', Arial, sans-serif; 
+    background-color: #f7f7f7; /* Fondo general muy claro */
+    margin: 40px 0;
+    padding: 0;
+    cursor: default; 
+}
+
+/* ⭐ Estilo del Título Profesional ⭐ */
+#main-title {
+    font-size: 2.2em;
+    font-weight: 700; /* Negrita limpia */
+    color: #333; /* Color oscuro simple */
+    margin-bottom: 25px;
+    letter-spacing: 1px;
+}
+
+#game-container {
+    width: 600px;
+    height: 400px;
+    /* Borde fino y profesional */
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    position: relative; 
+    overflow: hidden;
+    background-color: #F4D09C; /* Color Piel cálido */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Sombra elegante */
+}
+
+/* --- Estilos de Mosquitos (Se mantienen las imágenes, pero la jerarquía es simple) --- */
+.mosquito { 
+    width: 40px; 
+    height: 40px; 
+    position: absolute;
+    transition: left 0s, top 0s; 
+    background-size: contain; 
+    background-repeat: no-repeat;
+    background-position: center; 
+    border-radius: 0; 
+    background-image: url('images/mosquito_volando.png'); 
+}
+
+.mosquito.landed {
+    background-image: url('images/mosquito_aterrizado.png'); 
+    transform: scale(1.1); 
+}
+
+.mosquito.bitten {
+    background-image: url('images/mosquito_picando.png'); 
+    transform: scale(1.0);
+}
+
+.mosquito.smashed {
+    background-image: url('images/mosquito_aplastado.png'); 
+    transform: scale(1.0); 
+}
+
+/* --- Estilos de la Paleta --- */
+#paleta {
+    width: 50px;
+    height: 50px;
+    background-image: url('images/paleta_retro.png'); 
+    background-size: contain; 
+    background-repeat: no-repeat;
+    background-position: center;
+    position: absolute;
+    z-index: 100; 
+    pointer-events: none; 
+    display: none; 
+}
+
+/* ⭐ Panel de Información Limpio y Separado ⭐ */
+#info-panel {
+    width: 600px; /* Ancho igual al contenedor del juego */
+    margin-top: 25px;
+    padding: 15px 20px;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 5px; 
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); 
+    color: #555; 
+    font-size: 0.95em;
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#info-panel p {
+    margin: 0;
+    font-weight: 500;
+}
+
+#info-panel span {
+    font-weight: bold;
+    color: #e74c3c; /* Rojo para picaduras */
+    margin-left: 5px;
+}
+
+/* --- Botón de Inicio --- */
+#info-panel button {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff; /* Azul primario limpio */
+    color: white;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s;
+}
+
+#info-panel button:hover {
+    background-color: #0056b3; 
+}
