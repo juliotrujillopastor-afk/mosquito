@@ -1,22 +1,37 @@
+/* PASO 1: IMPORTAR FUENTE DE PÍXELES (Necesitas conexión a internet para cargarla) */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* --- Estilos Globales --- */
 body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Fuente profesional, sin ser demasiado genérica */
-    font-family: 'Helvetica Neue', Arial, sans-serif; 
-    background-color: #f7f7f7; /* Fondo general muy claro */
+    /* Aplicar la fuente pixelada a la base */
+    font-family: 'Press Start 2P', monospace; 
+    background-color: #f7f7f7; 
     margin: 40px 0;
     padding: 0;
     cursor: default; 
 }
 
-/* ⭐ Estilo del Título Profesional ⭐ */
+/* 🔥 Oculta el cursor nativo de forma global y en el contenedor */
+body, #game-container {
+    
+}
+
+
+/* ⭐ Estilo del Título RETRO: Plano y Pixelado ⭐ */
 #main-title {
-    font-size: 2.2em;
-    font-weight: 700; /* Negrita limpia */
-    color: #333; /* Color oscuro simple */
-    margin-bottom: 25px;
-    letter-spacing: 1px;
+    font-family: 'Press Start 2P', monospace; /* Aplicar la fuente pixelada */
+    font-size: 2.0em; /* Tamaño grande */
+    font-weight: 400; 
+    
+    color: #CC0000; /* Rojo plano y llamativo */
+    
+    /* Estilo plano y pixelado (sin sombras) */
+    letter-spacing: 5px; 
+    margin-bottom: 30px;
+    text-transform: uppercase;
 }
 
 #game-container {
@@ -31,51 +46,63 @@ body {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Sombra elegante */
 }
 
-/* --- Estilos de Mosquitos (Se mantienen las imágenes, pero la jerarquía es simple) --- */
+/* --- Estilos de Mosquitos --- */
 .mosquito { 
     width: 40px; 
     height: 40px; 
     position: absolute;
     transition: left 0s, top 0s; 
+    
     background-size: contain; 
     background-repeat: no-repeat;
     background-position: center; 
     border-radius: 0; 
+    
+    /* Imagen por defecto: Volando */
     background-image: url('images/mosquito_volando.png'); 
 }
 
+/* Estado Aterrizado */
 .mosquito.landed {
     background-image: url('images/mosquito_aterrizado.png'); 
     transform: scale(1.1); 
+    border: none; 
 }
 
+/* Estado Picando (Pausa Dramática) */
 .mosquito.bitten {
     background-image: url('images/mosquito_picando.png'); 
     transform: scale(1.0);
+    border: none;
 }
 
+/* Estado Aplastado (Pausa de Victoria) */
 .mosquito.smashed {
     background-image: url('images/mosquito_aplastado.png'); 
     transform: scale(1.0); 
 }
 
+
 /* --- Estilos de la Paleta --- */
 #paleta {
     width: 50px;
     height: 50px;
+    /* Asumiendo que la paleta usa una imagen para el look retro */
     background-image: url('images/paleta_retro.png'); 
     background-size: contain; 
     background-repeat: no-repeat;
     background-position: center;
     position: absolute;
     z-index: 100; 
-    pointer-events: none; 
-    display: none; 
+    pointer-events: none; /* Crucial para poder hacer clic 'a través' de la paleta */
+    display: none; /* Se muestra con startGame() */
 }
 
-/* ⭐ Panel de Información Limpio y Separado ⭐ */
+
+/* ⭐ Panel de Información (Diseño en 2 Filas con Grid) ⭐ */
 #info-panel {
-    width: 600px; /* Ancho igual al contenedor del juego */
+    width: 600px; /* Corregido para coincidir con #game-container */
+    
     margin-top: 25px;
     padding: 15px 20px;
     background-color: #ffffff;
@@ -84,36 +111,41 @@ body {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); 
     color: #555; 
     font-size: 0.95em;
-    display: flex;
-    gap: 30px;
+    
+    /* Diseño Grid para 2 filas: 1ª Columna, 2ª Columna, 3ª Columna (Botón) */
+    display: grid; 
+    grid-template-columns: 1fr 1fr auto; 
+    grid-template-rows: auto auto; 
+    gap: 15px 10px; 
     align-items: center;
-    justify-content: space-between;
 }
 
 #info-panel p {
-    margin: 0;
-    font-weight: 500;
+    margin: 0; 
+    white-space: nowrap;
 }
 
 #info-panel span {
     font-weight: bold;
-    color: #e74c3c; /* Rojo para picaduras */
-    margin-left: 5px;
+    color: #000;
 }
 
-/* --- Botón de Inicio --- */
+/* Botón que ocupa dos filas */
 #info-panel button {
-    padding: 8px 20px;
-    border: none;
-    border-radius: 4px;
-    background-color: #007bff; /* Azul primario limpio */
+    grid-column: 3; /* Posiciona el botón en la tercera columna */
+    grid-row: 1 / span 2; /* Hace que el botón ocupe las dos filas */
+    padding: 10px 15px;
+    background-color: #CC0000;
     color: white;
-    font-size: 1em;
-    font-weight: 600;
+    border: none;
+    border-radius: 3px;
     cursor: pointer;
-    transition: background-color 0.2s, opacity 0.2s;
+    font-family: 'Press Start 2P', monospace; 
+    font-size: 0.7em;
+    transition: background-color 0.2s;
+    justify-self: end; /* Alinea el botón a la derecha */
 }
 
 #info-panel button:hover {
-    background-color: #0056b3; 
+    background-color: #990000;
 }

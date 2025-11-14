@@ -4,6 +4,8 @@ let currentLevel = 1;
 const LEVEL_DURATION = 30;
 let bites = 0;
 const MAX_BITES = 5;
+// ⭐ NUEVA VARIABLE: Marcador de mosquitos aplastados ⭐
+let score = 0;
 const MOSQUITO_SPEED = 1000;
 const BITE_DELAY = 1500;
 const PAUSE_ON_BITE = 1000;
@@ -16,7 +18,7 @@ let timeLeft;
 
 let activeMosquitos = [];
 
-// ⭐ CORRECCIÓN: Objetos de Audio con extensión .wav ⭐
+// Objetos de Audio (usando .wav según tu solicitud)
 const flightSound = new Audio('sounds/flight_loop.wav');
 flightSound.loop = true; 
 flightSound.volume = 0.5; 
@@ -30,6 +32,8 @@ const gameContainer = document.getElementById('game-container');
 const bitesDisplay = document.getElementById('bites');
 const timerDisplay = document.getElementById('timer');
 const levelDisplay = document.getElementById('level-display');
+// ⭐ NUEVA REFERENCIA: Marcador de puntuación ⭐
+const scoreDisplay = document.getElementById('score');
 
 // --- Funciones de Mosquitos ---
 function createMosquitoElement(id) {
@@ -74,7 +78,6 @@ function manageMosquitoLife(mosquitoElement) {
 
     if (Math.random() < LANDING_PROBABILITY) {
         // Aterriza y pica
-        // AUDIO: Iniciar sonido de vuelo (Solo si no está sonando)
         if (flightSound.paused) {
             flightSound.play().catch(e => console.log('Autoplay blocked:', e));
         }
@@ -82,13 +85,11 @@ function manageMosquitoLife(mosquitoElement) {
         mosquitoElement.flyTimeout = setTimeout(() => {
             if (!isGameRunning) return;
 
-            // AUDIO: Detener sonido de vuelo cuando aterriza para picar
             flightSound.pause();
 
             mosquitoElement.classList.add('landed');
             mosquitoElement.hittable = true;
 
-            // Solo programar la picadura si sigue aterrizado
             mosquitoElement.biteTimeout = setTimeout(() => {
                 if (mosquitoElement.hittable) {
                     checkBite(mosquitoElement);
@@ -97,7 +98,6 @@ function manageMosquitoLife(mosquitoElement) {
         }, MOSQUITO_SPEED);
     } else {
         // Sigue volando
-        // AUDIO: Asegurar que el sonido de vuelo esté activo
         if (flightSound.paused) {
             flightSound.play().catch(e => console.log('Autoplay blocked:', e));
         }
@@ -111,7 +111,6 @@ function manageMosquitoLife(mosquitoElement) {
 function checkBite(mosquitoElement) {
     if (!isGameRunning || !mosquitoElement.hittable) return;
 
-    // AUDIO: Sonido de Picadura
     biteSound.currentTime = 0; 
     biteSound.play();
 
@@ -139,7 +138,10 @@ function handleMosquitoSmash(mosquitoElement) {
     smashSound.currentTime = 0;
     smashSound.play();
     
-    // Si aplastamos, pausamos el sonido de vuelo hasta que se genere el nuevo mosquito
+    // ⭐ LÓGICA DE PUNTUACIÓN: Incrementar el marcador ⭐
+    score++;
+    scoreDisplay.textContent = score;
+
     flightSound.pause();
 
     clearTimeout(mosquitoElement.flyTimeout);
@@ -155,7 +157,6 @@ function handleMosquitoSmash(mosquitoElement) {
         mosquitoElement.remove();
         activeMosquitos = activeMosquitos.filter(m => m !== mosquitoElement);
 
-        // Crear un nuevo mosquito si el juego sigue activo
         if (isGameRunning) {
             const newMosquito = createMosquitoElement(Date.now());
             activeMosquitos.push(newMosquito);
@@ -183,7 +184,6 @@ function startLevel() {
     });
     activeMosquitos = [];
 
-    // AUDIO: Comenzar el vuelo al iniciar el nivel
     flightSound.play().catch(e => console.log('Autoplay blocked:', e));
 
     for (let i = 0; i < targetMosquitos; i++) {
@@ -208,10 +208,8 @@ function startLevel() {
 function nextLevel() {
     if (isGameRunning) {
         
-        // AUDIO: Pausar el sonido de vuelo durante la pausa del nivel
         flightSound.pause();
 
-        // 1. Limpiar los temporizadores de los mosquitos del nivel finalizado inmediatamente
         activeMosquitos.forEach(m => {
             clearTimeout(m.flyTimeout);
             clearTimeout(m.biteTimeout);
@@ -225,7 +223,6 @@ function nextLevel() {
         
         showMessage(`¡Nivel ${currentLevel - 1} superado! Preparando Nivel ${currentLevel}.`);
         
-        // 2. Pausa de 5 segundos antes de empezar el nuevo nivel.
         setTimeout(() => {
             if (isGameRunning) {
                 startLevel();
@@ -234,7 +231,30 @@ function nextLevel() {
     }
 }
 
-// --- Interacción y Control de Flujo ---
+// --- Interacción: Soporte Ratón y Táctil ---
+
+function updatePaletaPosition(e) {
+    if (!isGameRunning) return;
+
+    // Detectar si es un evento táctil o de ratón
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+    const rect = gameContainer.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+
+    paleta.style.left = x - paleta.offsetWidth / 2 + 'px';
+    paleta.style.top = y - paleta.offsetHeight / 2 + 'px';
+}
+
+// Evento para Ratón (PC)
+gameContainer.addEventListener('mousemove', updatePaletaPosition);
+
+// Evento para Táctil (Móvil)
+gameContainer.addEventListener('touchmove', updatePaletaPosition);
+
+
 gameContainer.addEventListener('click', (e) => {
     if (!isGameRunning) return;
 
@@ -266,16 +286,6 @@ gameContainer.addEventListener('click', (e) => {
     }
 });
 
-gameContainer.addEventListener('mousemove', (e) => {
-    if (!isGameRunning) return;
-
-    const rect = gameContainer.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    paleta.style.left = x - paleta.offsetWidth / 2 + 'px';
-    paleta.style.top = y - paleta.offsetHeight / 2 + 'px';
-});
 
 // --- Inicio y Fin del Juego ---
 window.startGame = function() {
@@ -284,8 +294,12 @@ window.startGame = function() {
     isGameRunning = true;
     currentLevel = 1;
     bites = 0;
-    bitesDisplay.textContent = `${bites} / ${MAX_BITES}`;
+    // ⭐ Inicializar marcador de puntuación ⭐
+    score = 0; 
+    
+    bitesDisplay.textContent = `${bites}/${MAX_BITES}`;
     levelDisplay.textContent = currentLevel;
+    scoreDisplay.textContent = score;
 
     paleta.style.display = 'block';
 
@@ -298,7 +312,6 @@ function endGame(message) {
 
     clearInterval(timerInterval);
 
-    // AUDIO: Pausar el sonido de vuelo al terminar el juego
     flightSound.pause();
 
     activeMosquitos.forEach(m => {
@@ -312,7 +325,7 @@ function endGame(message) {
 
     paleta.style.display = 'none';
 
-    showMessage(`FIN DEL JUEGO. ${message}`);
+    showMessage(`FIN DEL JUEGO. ${message} Total Aplastados: ${score}`);
 }
 
 // --- Mensajes en pantalla (sin cambios) ---
